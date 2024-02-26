@@ -1,0 +1,74 @@
+﻿@model LinkAggregatorMVC.Models.Links
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Links</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ID" />
+            <div class="form-group">
+                <label asp-for="Caption" class="control-label"></label>
+                <input asp-for="Caption" class="form-control" />
+                <span asp-validation-for="Caption" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="URL" class="control-label"></label>
+                <input asp-for="URL" class="form-control" />
+                <span asp-validation-for="URL" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LinkPostingDate" class="control-label"></label>
+                <input asp-for="LinkPostingDate" class="form-control" />
+                <span asp-validation-for="LinkPostingDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Rating" class="control-label"></label>
+                <input asp-for="Rating" class="form-control" />
+                <span asp-validation-for="Rating" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Importance" class="control-label"></label>
+                <input asp-for="Importance" class="form-control" />
+                <span asp-validation-for="Importance" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TotalClicks" class="control-label"></label>
+                <input asp-for="TotalClicks" class="form-control" />
+                <span asp-validation-for="TotalClicks" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Files" class="control-label"></label>
+                <input asp-for="Files" class="form-control" multiple />
+            </div>
+            <div class="form-group col-md-4">
+                @foreach (var imagelink in Model.LinkImages!)
+                {
+                    <input type="checkbox" value="@imagelink.ID" name="DeleteImageList" />
+                    <img src="~/images/@imagelink.ImagePath" height="150" width="200" asp-append-version="true" />
+                }
+            </div>
+            <div class="form-group">
+                <label asp-for="LinkCategories" class="control-label"></label>
+                @Html.ListBoxFor(model => model.SelectedCategories, Model.Categories, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

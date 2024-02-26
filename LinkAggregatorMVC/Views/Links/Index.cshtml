@@ -1,0 +1,176 @@
+﻿@model LinkAggregatorMVC.Helpers.PaginatedList<LinkAggregatorMVC.Models.Links>
+
+@{
+    ViewData["Title"] = "Index";
+    
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-default" asp-route-pageSize=@ViewData["LinkPageSize"] /> |
+            <a asp-action="Index">Back to Full List</a>
+        </p>
+    </div>
+</form>
+<div class="container-fluid">
+    <div class="row border">
+        <div class="col-sm-12">
+            <div class="row">
+                <div class="col-xs-2 col-sm-2">
+                    <a asp-action="Index"  asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Caption</a>
+                </div>
+                <div class="col-xs-2 col-sm-2">
+                    <p id="testid">URL</p>
+                </div>
+                <div class="col-xs-2 col-sm-2">
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Link Posting Date</a>
+                </div>
+                <div class="col-xs-2 col-sm-2">
+                    <p>Rating</p>
+                </div>
+                <div class="col-xs-1 col-sm-1">
+                    <p>Importance</p>
+                </div>
+                <div class="col-xs-1 col-sm-1">
+                    <p>Total Clicks</p>
+                </div>
+                <div class="col-xs-2 col-sm-2">
+                    <p>Links</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    @foreach (var item in Model) {
+    <div class="row row-striped">
+        <div class="col-sm-12">
+            <div class="row border">
+                <div class="row">
+                    <div class="col-xs-2 col-sm-2">
+                            @Html.DisplayFor(modelItem => item.Caption)
+                    </div>
+                    <div class="col-xs-2 col-sm-2">
+                            @Html.DisplayFor(modelItem => item.URL)
+                    </div>
+                    <div class="col-xs-2 col-sm-2">
+                            @Html.DisplayFor(modelItem => item.LinkPostingDate)
+                    </div>
+                    <div class="col-xs-2 col-sm-2">
+                            @Html.DisplayFor(modelItem => item.Rating)
+                    </div>
+                    <div class="col-xs-1 col-sm-1">
+                            @Html.DisplayFor(modelItem => item.Importance)
+                    </div>
+                    <div class="col-xs-1 col-sm-1">
+                            @Html.DisplayFor(modelItem => item.TotalClicks)
+                    </div>
+                    <div class="col-xs-2 col-sm-2">
+                            <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    </div>
+
+                </div>
+                <div class="row">
+                        @foreach (var imagelink in item.LinkImages!)
+                        {
+                        <div class="col-xs-3 col-sm-3">
+                            <img src="~/images/@imagelink.ImagePath" height="150" width="200" asp-append-version="true" />  
+                        </div>
+                        }
+                </div>
+                    <div class="row">
+                        @foreach (var category in item.LinkCategories!)
+                        {
+                            var mycategory = ((List<SelectListItem>)ViewData["Categories"]!).Where(x => x.Value == category.CategoriesLookup.ToString()).FirstOrDefault();
+
+                          <div class="col-xs-2 col-sm-2">
+                                <p>@mycategory!.Text</p>
+                           </div>
+                        }
+                    </div>
+            </div>
+        </div>
+
+    </div>
+    }
+
+</div>
+
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-pageSize=@ViewData["LinkPageSize"]
+   class="btn btn-default @prevDisabled ">
+    First
+</a>
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-pageSize=@ViewData["LinkPageSize"]
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-pageSize=@ViewData["LinkPageSize"]
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.TotalPages)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-pageSize=@ViewData["LinkPageSize"]
+   class="btn btn-default @nextDisabled">
+    Last Page
+</a>
+<form asp-action="Index" method="get">
+<div class="form-actions no-color">
+        <input type="number" value="@ViewData["LinkPageSize"]" name="pageSize" id="pageSizeId" />
+        <input type="submit" value="Set" class="btn btn-default" /> 
+</div>
+</form>
+<script>
+  
+    try {
+        var storTest = window['localStorage'];
+        let pagesize=storTest.getItem("PageSize");
+        // console.log("PageSize From LocalStorage "+pagesize)
+        if (pagesize === "" || pagesize===null) { 
+            pagesize = 10;
+            storTest.setItem("PageSize", pagesize);
+        }
+        var p = document.getElementById("pageSizeId");
+        // console.log("From Element "+p.value);
+        if (p.value !== pagesize) { 
+            p.value = pagesize;
+            @ViewData["LinkPageSize"]=pagesize;
+        }
+        
+        
+        // console.log(pagesize);
+    }
+    catch (e) { console.log(e); }
+
+</script>
